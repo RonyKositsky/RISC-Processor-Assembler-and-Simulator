@@ -40,25 +40,45 @@ int HasImmediate(char* rd, char* rs, char* rt) {
 	return 0;
 }
 
+int InsideLabelList(char* potentialLabel) {
+	for (int i = 0; i < labelsCounter; i++) {
+		if (!strcmp(potentialLabel, (*(LablesLocations + i)).LableName)) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+int GetLabelLine(char* label) {
+	for (int i = 0; i < labelsCounter; i++) {
+		if (!strcmp(label, (*(LablesLocations + i)).LableName)) {
+			return (int)LablesLocations[i].LabelLine;
+		}
+	}
+}
+
 void ExtractLabels(FILE* asmFile) {
 	char line[MAX_LINE_LENGTH];
 	int lineCounter = 0;
 
 	while (fgets(line, MAX_LINE_LENGTH, asmFile) != NULL)
 	{
-		char opcode[20], rd[20], rs[20], rt[20], immVal[20];
+		char* opcode = (char*)calloc(20, sizeof(char));
+		char rd[20], rs[20], rt[20], immVal[20];
 
 		// Search for command line
 		if (sscanf(line, "%s %s %s %s %s", opcode, rd, rs, rt, immVal) != NULL) {
 			if (opcode[strlen(opcode) - 1] == ':') { // This is label
 				RemoveLastChar(opcode);
-				Label labelStruct = { opcode, lineCounter };
+				Label labelStruct = { &(*opcode), lineCounter };
 				if (LablesLocations == NULL) {
 					LablesLocations = (Label*)calloc(1, sizeof(Label));
-					LablesLocations[0] = labelStruct;
+					*LablesLocations = labelStruct;
 				}
 				else {
 					LablesLocations = realloc(LablesLocations, (labelsCounter + 1) * sizeof(Label));
+					*(LablesLocations + labelsCounter) = labelStruct;
 				}
 
 				labelsCounter++;
@@ -74,7 +94,7 @@ void ExtractLabels(FILE* asmFile) {
 void ExtractCommands(FILE* asmFile, FILE* imemFile) {
 	char line[MAX_LINE_LENGTH];
 	int lineCounter = 0;
-
+	rewind(asmFile);
 	while (fgets(line, MAX_LINE_LENGTH, asmFile) != NULL) {
 		char opcode[20], rd[20], rs[20], rt[20], immVal[20];
 
@@ -99,12 +119,22 @@ void ExtractCommands(FILE* asmFile, FILE* imemFile) {
 			fputs(rtNumber, imemFile);
 			fputc('\n', imemFile);
 
-			// if there is $imm then convert immVal to Hex
-			if (HasImmediate(rd, rs, rt)) {
-				char hexValue[6];
-				GetHexValueOfConstant(immVal, &hexValue);
+			if (InsideLabelList(immVal)) {
+				int line = GetLabelLine(immVal);
+				char line_arr[6], hexValue[6];
+				sprintf(line_arr, "%d", line); //Getting line number from the file.
+				GetHexValueOfConstant(line_arr, &hexValue); //Getting line number as hex.
 				fputs(hexValue, imemFile);
 				fputc('\n', imemFile);
+			}
+			else {
+				// if there is $imm then convert immVal to Hex
+				if (HasImmediate(rd, rs, rt)) {
+					char hexValue[6];
+					GetHexValueOfConstant(immVal, &hexValue);
+					fputs(hexValue, imemFile);
+					fputc('\n', imemFile);
+				}
 			}
 		}
 	}
@@ -122,7 +152,7 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-	//ExtractLabels(asmFile);
+	ExtractLabels(asmFile);
 	ExtractCommands(asmFile, imemFile);
 	
 	fclose(asmFile);

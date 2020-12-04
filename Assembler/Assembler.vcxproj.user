@@ -5,7 +5,7 @@
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>"C:\Users\User\Desktop\fib.asm" "C:\Users\User\Desktop\imemin.txt" 1</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>"C:\Users\oguth\Documents\ComputerOrganizationProject\fib.asm" "C:\Users\oguth\Documents\ComputerOrganizationProject\imemin.txt" C:\Users\oguth\Documents\ComputerOrganizationProject\dmemin2.txt" </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

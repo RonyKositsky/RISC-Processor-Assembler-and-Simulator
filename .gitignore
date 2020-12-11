@@ -2,16 +2,11 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/Assembler/.vs/Assembler/v16/Solution.VC.db-wal
-/Assembler/.vs/Assembler/v16/Solution.VC.db-shm
-/Assembler/.vs/Assembler/v16/Solution.VC.db
-/Assembler/.vs/Assembler/v16/Browse.VC.opendb
-/Assembler/.vs/Assembler/v16/Browse.VC.db-wal
-/Assembler/.vs/Assembler/v16/Browse.VC.db-shm
-/Assembler/.vs/Assembler/v16/Browse.VC.db
 /Assembler/x64/Debug
 /Assembler/Debug
+/Assembler/.vs
 /Simulator/x64/Debug
 /Simulator/Debug
-/Assembler/.vs/Assembler/v16/ipch/AutoPCH/de832e58fa9d8070
-/Assembler/.vs/Assembler/v16
+/Simulator/.vs
+.user
+.filter

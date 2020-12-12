@@ -139,10 +139,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Interrupts.c" />
+    <ClCompile Include="IO\IOHandler.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="IO\Monitor.c" />
     <ClCompile Include="StaticDefinitions.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Interrupts.h" />
+    <ClInclude Include="IO\IOHandler.h" />
+    <ClInclude Include="IO\Monitor.h" />
     <ClInclude Include="StaticDefinations.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

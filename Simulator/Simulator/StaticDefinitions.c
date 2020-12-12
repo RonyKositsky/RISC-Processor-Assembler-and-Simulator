@@ -1,4 +1,39 @@
+#include <stdlib.h>
+#include <string.h>
+
+
 #include "StaticDefinations.h"
+#include "Interrupts.h"
+
+// Helpers
+int GetDecimalFromHex(char* hexValue)
+{
+	return (int)strtol(hexValue, NULL, 16);
+}
+
+int GetDecimalFromHex2Comp(char* hexValue)
+{
+	if (hexValue[0] == '0')
+		return GetDecimalFromHex(hexValue);
+
+	return ((GetDecimalFromHex(hexValue) & 0xFFFFF) << 12) >> 12;
+}
+
+void RemoveLastChar(char* str) {
+	str[strlen(str) - 1] = '\0';
+}
+
+void GetHexValueOfConstant(uint num, char* hexVal, int numOfBytes) {
+	const int base = 16;
+	hexVal[numOfBytes] = '\0';
+	int i = numOfBytes - 1;
+
+	do {
+		hexVal[i] = "0123456789ABCDEF"[num % base];
+		i--;
+		num /= base;
+	} while (i >= 0);
+}
 
 // Static definitions
 Register RegisterMapping[NUMBER_OF_REGISTERS] = {
@@ -21,28 +56,28 @@ Register RegisterMapping[NUMBER_OF_REGISTERS] = {
 };
 
 IORegister IORegisterMapping[NUMBER_OF_IO_REGISTERS] = {
-	{"irq0enable", "0", 1, 0},
-	{"irq1enable", "1", 1, 0},
-	{"irq2enable", "2", 1, 0},
-	{"irq0status", "3", 1, 0},
-	{"irq1status", "4", 1, 0},
-	{"irq2status", "5", 1, 0},
-	{"irqhandler", "6", 12, 0},
-	{"irqreturn", "7", 12, 0},
-	{"clks", "8", 32, 0},
-	{"leds", "9", 32, 0},
-	{"reserved", "10", 32, 0},
-	{"timerenable", "11", 1, 0},
-	{"timercurrent", "12", 32, 0},
-	{"timermax", "13", 32, 0},
-	{"diskcmd", "14", 2, 0},
-	{"disksector", "15", 7, 0},
-	{"diskbuffer", "16", 12, 0},
-	{"diskstatus", "17", 1, 0},
-	{"monitorcmd", "18", 1, 0},
-	{"monitorx", "19", 11, 0},
-	{"monitory", "20", 10, 0},
-	{"monitordata", "21", 8, 0}
+	{IRQ_0_ENABLE, "0", 1, 0},
+	{IRQ_1_ENABLE, "1", 1, 0},
+	{IRQ_2_ENABLE, "2", 1, 0},
+	{IRQ_0_STATUS, "3", 1, 0},
+	{IRQ_1_STATUS, "4", 1, 0},
+	{IRQ_2_STATUS, "5", 1, 0},
+	{IRQ_HANDLER, "6", 12, 0},
+	{IRQ_RETURN, "7", 12, 0},
+	{CLKS, "8", 32, 0},
+	{LEDS, "9", 32, 0},
+	{RESERVED, "10", 32, 0},
+	{TIMER_ENABLE, "11", 1, 0},
+	{TIMER_CURRENT, "12", 32, 0},
+	{TIMER_MAX, "13", 32, 0},
+	{DISK_CMD, "14", 2, 0},
+	{DISK_SECTOR, "15", 7, 0},
+	{DISK_BUFFER, "16", 12, 0},
+	{DISK_STATUS, "17", 1, 0},
+	{MONITOR_CMD, "18", 1, 0},
+	{MONITOR_X, "19", 11, 0},
+	{MONITOR_Y, "20", 10, 0},
+	{MONITOR_DATA, "21", 8, 0}
 };
 
 // Operation Functions
@@ -71,7 +106,6 @@ void ArithmeticShiftRight(uint rd, uint rs, uint rt){} // TODO:
 void LogicShiftRight(uint rd, uint rs, uint rt) {
 	RegisterMapping[rd].RegisterValue =
 		RegisterMapping[rs].RegisterValue >> RegisterMapping[rt].RegisterValue; }
-
 void BranchEqual(uint rd, uint rs, uint rt) {
 	uint condition = RegisterMapping[rs].RegisterValue == RegisterMapping[rt].RegisterValue;
 	if (condition)
@@ -103,8 +137,7 @@ void BranchGraterEqual(uint rd, uint rs, uint rt) {
 		ProgramCounter = RegisterMapping[rd].RegisterValue & 0x1FF; // Taking the low 10 bits
 }
 void JumpAndLink(uint rd, uint rs, uint rt) {
-	// TODO: Register $ra <- pc+(1|2)
-	//RegisterMapping[15] = ProgramCounter + i
+	RegisterMapping[15].RegisterValue = ProgramCounter;
 	ProgramCounter = RegisterMapping[rd].RegisterValue & 0x1FF;
 }
 void LoadWord(uint rd, uint rs, uint rt) {
@@ -116,8 +149,8 @@ void StoreWord(uint rd, uint rs, uint rt) {
 	Memory[address] = RegisterMapping[rd].RegisterValue;
 }
 void ReturnInterrupt(uint rd, uint rs, uint rt) {
-	// TODO: Check if need to take just low 10 bits
-	ProgramCounter = IORegisterMapping[7].RegisterValue; // PC <- IORegister[7] (irqreturn - PC of interrupt return address, 12 bits) 
+	ProgramCounter = IORegisterMapping[IRQ_RETURN].RegisterValue;
+	InterruptBusy = 0;
 }
 void In(uint rd, uint rs, uint rt) {
 	uint ioIndex = RegisterMapping[rs].RegisterValue + RegisterMapping[rt].RegisterValue;
@@ -127,7 +160,10 @@ void Out(uint rd, uint rs, uint rt) {
 	uint ioIndex = RegisterMapping[rs].RegisterValue + RegisterMapping[rt].RegisterValue;
 	IORegisterMapping[ioIndex].RegisterValue = RegisterMapping[rd].RegisterValue;
 }
-void Halt(uint rd, uint rs, uint rt){} // TODO: Check how to implement
+void Halt(uint rd, uint rs, uint rt) // TODO: Check it works
+{
+	ProgramCounter = INSTRUCTION_COUNT + 1;
+}
 
 Opcode OpcodeMapping[NUMBER_OF_OPCODES] = {
 	{"add", "00", Add},
@@ -154,3 +190,18 @@ Opcode OpcodeMapping[NUMBER_OF_OPCODES] = {
 	{"halt", "15", Halt},
 };
 
+InstructionCommand* GetInstructionCommand(uint pc)
+{
+	for (uint i = 0; i < InstructionCounter; i++)
+	{
+		if (InstructionCommands[i].PCLocation == pc)
+			return &InstructionCommands[i];
+	}
+	
+	return NULL;
+}
+
+uint IncreasePCAmount(InstructionCommand command)
+{
+	return command.HasImmediate ? 2 : 1;
+}

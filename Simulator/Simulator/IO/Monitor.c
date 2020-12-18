@@ -1,4 +1,5 @@
 #include "Monitor.h"
+#include "../Misc/Files.h"
 
 void InitMonitor()
 {
@@ -17,7 +18,7 @@ void MonitorCommand()
 	MonitorData[x][y] = data;
 }
 
-void PrintMonitorData(FILE* monitorFile)
+void WriteMonitorData()
 {
 	for (int y = 0; y < NUMBER_OF_PIXEL_Y; y++)
 	{
@@ -25,7 +26,7 @@ void PrintMonitorData(FILE* monitorFile)
 		{
 			char pixel[3];
 			GetHexValueOfConstant(MonitorData[x][y], pixel, 2);
-			fprintf(monitorFile, "%s\n", pixel);
+			fprintf(MonitorFile, "%s\n", pixel);
 		}
 	}
 }

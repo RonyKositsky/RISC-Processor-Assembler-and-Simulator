@@ -1,13 +1,12 @@
-﻿#ifndef STATIC_DEFINITION
-#define STATIC_DEFINITION
+﻿#ifndef REGISTERS
+#define REGISTERS
 
 #define NUMBER_OF_REGISTERS 16
 #define NUMBER_OF_IO_REGISTERS 22
 #define NUMBER_OF_OPCODES 22
-#define MEMORY_SIZE 4096
 #define INSTRUCTION_COUNT (InstructionCommands + InstructionCounter - 1)->PCLocation
+#include "Helpers.h"
 
-typedef unsigned int uint;
 typedef enum
 {
 	IRQ_0_ENABLE,
@@ -42,7 +41,7 @@ typedef struct // TODO: Remove name if unnecessary
 }Register;
 typedef struct
 {
-	IORegisterNames RegisterName;
+	char* RegisterName;
 	char* RegisterNumber;
 	int NumberOfBits;
 	uint RegisterValue;
@@ -66,23 +65,15 @@ typedef struct
 	char* Name;
 }InstructionCommand;
 
-uint ProgramCounter;
 InstructionCommand* InstructionCommands;
 uint InstructionCounter;
-uint ClockCycles;
-uint Memory[MEMORY_SIZE];
 
 Register RegisterMapping[NUMBER_OF_REGISTERS];
 IORegister IORegisterMapping[NUMBER_OF_IO_REGISTERS];
 Opcode OpcodeMapping[NUMBER_OF_OPCODES];
 
+void InstructionInit(void);
 InstructionCommand* GetInstructionCommand(uint pc);
 uint IncreasePCAmount(InstructionCommand command);
-
-// Helpers
-int GetDecimalFromHex(char* hexValue);
-int GetDecimalFromHex2Comp(char* hexValue);
-void RemoveLastChar(char* str);
-void GetHexValueOfConstant(uint num, char* hexVal, int numOfBytes);
 
 #endif

@@ -139,17 +139,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Interrupts.c" />
+    <ClCompile Include="IO\Disk.c" />
     <ClCompile Include="IO\IOHandler.c" />
+    <ClCompile Include="IO\Led.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="IO\Monitor.c" />
-    <ClCompile Include="StaticDefinitions.c" />
+    <ClCompile Include="Misc\Files.c" />
+    <ClCompile Include="Misc\Helpers.c" />
+    <ClCompile Include="Misc\Interrupts.c" />
+    <ClCompile Include="Misc\Memory.c" />
+    <ClCompile Include="Misc\Registers.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Interrupts.h" />
+    <ClInclude Include="IO\Disk.h" />
     <ClInclude Include="IO\IOHandler.h" />
+    <ClInclude Include="IO\Led.h" />
     <ClInclude Include="IO\Monitor.h" />
-    <ClInclude Include="StaticDefinations.h" />
+    <ClInclude Include="Misc\Files.h" />
+    <ClInclude Include="Misc\Helpers.h" />
+    <ClInclude Include="Misc\Interrupts.h" />
+    <ClInclude Include="Misc\Memory.h" />
+    <ClInclude Include="Misc\Registers.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,39 +1,13 @@
+#define _CRT_SECURE_NO_WARNINGS
+
+#include "Registers.h"
+#include "Files.h"
+#include "Interrupts.h"
+#include "Memory.h"
+
 #include <stdlib.h>
 #include <string.h>
 
-
-#include "StaticDefinations.h"
-#include "Interrupts.h"
-
-// Helpers
-int GetDecimalFromHex(char* hexValue)
-{
-	return (int)strtol(hexValue, NULL, 16);
-}
-
-int GetDecimalFromHex2Comp(char* hexValue)
-{
-	if (hexValue[0] == '0')
-		return GetDecimalFromHex(hexValue);
-
-	return ((GetDecimalFromHex(hexValue) & 0xFFFFF) << 12) >> 12;
-}
-
-void RemoveLastChar(char* str) {
-	str[strlen(str) - 1] = '\0';
-}
-
-void GetHexValueOfConstant(uint num, char* hexVal, int numOfBytes) {
-	const int base = 16;
-	hexVal[numOfBytes] = '\0';
-	int i = numOfBytes - 1;
-
-	do {
-		hexVal[i] = "0123456789ABCDEF"[num % base];
-		i--;
-		num /= base;
-	} while (i >= 0);
-}
 
 // Static definitions
 Register RegisterMapping[NUMBER_OF_REGISTERS] = {
@@ -56,28 +30,28 @@ Register RegisterMapping[NUMBER_OF_REGISTERS] = {
 };
 
 IORegister IORegisterMapping[NUMBER_OF_IO_REGISTERS] = {
-	{IRQ_0_ENABLE, "0", 1, 0},
-	{IRQ_1_ENABLE, "1", 1, 0},
-	{IRQ_2_ENABLE, "2", 1, 0},
-	{IRQ_0_STATUS, "3", 1, 0},
-	{IRQ_1_STATUS, "4", 1, 0},
-	{IRQ_2_STATUS, "5", 1, 0},
-	{IRQ_HANDLER, "6", 12, 0},
-	{IRQ_RETURN, "7", 12, 0},
-	{CLKS, "8", 32, 0},
-	{LEDS, "9", 32, 0},
-	{RESERVED, "10", 32, 0},
-	{TIMER_ENABLE, "11", 1, 0},
-	{TIMER_CURRENT, "12", 32, 0},
-	{TIMER_MAX, "13", 32, 0},
-	{DISK_CMD, "14", 2, 0},
-	{DISK_SECTOR, "15", 7, 0},
-	{DISK_BUFFER, "16", 12, 0},
-	{DISK_STATUS, "17", 1, 0},
-	{MONITOR_CMD, "18", 1, 0},
-	{MONITOR_X, "19", 11, 0},
-	{MONITOR_Y, "20", 10, 0},
-	{MONITOR_DATA, "21", 8, 0}
+	{"irq0enable", "0", 1, 0},
+	{"irq1enable", "1", 1, 0},
+	{"irq2enable", "2", 1, 0},
+	{"irq0status", "3", 1, 0},
+	{"irq1status", "4", 1, 0},
+	{"irq2status", "5", 1, 0},
+	{"irqhandler", "6", 12, 0},
+	{"irqreturn", "7", 12, 0},
+	{"clks", "8", 32, 0},
+	{"leds", "9", 32, 0},
+	{"reserved", "10", 32, 0},
+	{"timerenable", "11", 1, 0},
+	{"timercurrent", "12", 32, 0},
+	{"timermax", "13", 32, 0},
+	{"diskcmd", "14", 2, 0},
+	{"disksector", "15", 7, 0},
+	{"diskbuffer", "16", 12, 0},
+	{"diskstatus", "17", 1, 0},
+	{"monitorcmd", "18", 1, 0},
+	{"monitorx", "19", 11, 0},
+	{"monitory", "20", 10, 0},
+	{"monitordata", "21", 8, 0}
 };
 
 // Operation Functions
@@ -102,7 +76,7 @@ void Multiply(uint rd, uint rs, uint rt) {
 void LogicShiftLeft(uint rd, uint rs, uint rt) {
 	RegisterMapping[rd].RegisterValue =
 		RegisterMapping[rs].RegisterValue << RegisterMapping[rt].RegisterValue; }
-void ArithmeticShiftRight(uint rd, uint rs, uint rt){} // TODO:
+void ArithmeticShiftRight(uint rd, uint rs, uint rt){} // TODO: ArithmeticShiftRight
 void LogicShiftRight(uint rd, uint rs, uint rt) {
 	RegisterMapping[rd].RegisterValue =
 		RegisterMapping[rs].RegisterValue >> RegisterMapping[rt].RegisterValue; }
@@ -160,7 +134,7 @@ void Out(uint rd, uint rs, uint rt) {
 	uint ioIndex = RegisterMapping[rs].RegisterValue + RegisterMapping[rt].RegisterValue;
 	IORegisterMapping[ioIndex].RegisterValue = RegisterMapping[rd].RegisterValue;
 }
-void Halt(uint rd, uint rs, uint rt) // TODO: Check it works
+void Halt(uint rd, uint rs, uint rt)
 {
 	ProgramCounter = INSTRUCTION_COUNT + 1;
 }
@@ -189,6 +163,71 @@ Opcode OpcodeMapping[NUMBER_OF_OPCODES] = {
 	{"out", "14", Out},
 	{"halt", "15", Halt},
 };
+
+void InstructionInit()
+{
+	char line[7];
+	int lineCounter = 0;
+	while (fgets(line, 7, ImemInFile) != NULL) {
+		char opcodeBytes[3] = { line[0], line[1], '\0' };
+		uint opcodeIndex = GetDecimalFromHex(opcodeBytes);
+		char rdBytes[2] = { line[2], '\0' };
+		uint rdIndex = GetDecimalFromHex(rdBytes);
+		char rsBytes[2] = { line[3], '\0' };
+		uint rsIndex = GetDecimalFromHex(rsBytes);
+		char rtBytes[2] = { line[4], '\0' };
+		uint rtIndex = GetDecimalFromHex(rtBytes);
+		uint pcLocation = lineCounter;
+		lineCounter++;
+
+		char* name = (char*)calloc(6, sizeof(char));
+		if (name == NULL)
+			exit(1);
+
+		RemoveLastChar(line);
+		strcpy(name, line);
+
+		uint immValue = 0, hasImm = 0;
+		if (rdIndex == 1 || rtIndex == 1 || rsIndex == 1)
+		{
+			if (fgets(line, 7, ImemInFile) != NULL)
+			{
+				immValue = GetDecimalFromHex2Comp(line);
+			}
+			lineCounter++;
+			hasImm = 1;
+		}
+
+		InstructionCommand instruction = {
+			pcLocation,
+			OpcodeMapping[opcodeIndex],
+			rdIndex,
+			rsIndex,
+			rtIndex,
+			immValue,
+			hasImm,
+			name
+		};
+
+		if (InstructionCommands == NULL)
+		{
+			InstructionCommands = (InstructionCommand*)calloc(1, sizeof(InstructionCommand));
+			if (InstructionCommands != NULL)
+				*InstructionCommands = instruction;
+			else
+				exit(1); // TODO: What happen when fail to allocate memory?
+		}
+		else
+		{
+			InstructionCommands = realloc(InstructionCommands, (InstructionCounter + 1) * sizeof(InstructionCommand));
+			if (InstructionCommands + InstructionCounter != NULL)
+				*(InstructionCommands + InstructionCounter) = instruction;
+			else
+				exit(1); // TODO: What happen when fail to allocate memory?
+		}
+		InstructionCounter++;
+	}
+}
 
 InstructionCommand* GetInstructionCommand(uint pc)
 {

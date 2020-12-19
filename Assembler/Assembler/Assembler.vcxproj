@@ -20,7 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c" />
-    <ClCompile Include="StaticDefinitions.c" />
+    <ClCompile Include="Misc\Helpers.c" />
+    <ClCompile Include="Misc\StaticDefinitions.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Misc\Helpers.h" />
+    <ClInclude Include="Misc\StaticDefinitions.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

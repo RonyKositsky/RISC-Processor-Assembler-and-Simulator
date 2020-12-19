@@ -1,18 +1,6 @@
-#define NUMBER_OF_REGISTERS 16
-#define NUMBER_OF_OPCODES 22
+#include "StaticDefinitions.h"
 #include <string.h>
 
-typedef struct
-{
-	char* RegisterName;
-	char* RegisterNumber;
-}Register;
-
-typedef struct
-{
-	char* OpcodeName;
-	char* OpcodeNumber;
-}Opcode;
 
 // Static definitions
 

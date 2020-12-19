@@ -9,7 +9,5 @@
 /Simulator/Debug
 /Simulator/.vs
 .user
-.filter
-*.filters
 *.user
 /Simulator/Simulator/Debug

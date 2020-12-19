@@ -11,10 +11,12 @@
 #include "Misc/Memory.h"
 #include "Misc/Helpers.h"
 
+/*Initiate all relevant modules*/
 void Init()
 {
 	ProgramCounter = 0;
 	ClockCycles = 0;
+	
 	MemoryInit();
 	InstructionInit();
 	InitInterrupts();
@@ -67,8 +69,9 @@ void Exit()
 	WriteMemoryToFile();
 	WriteMonitorData();
 	WriteCyclesToFile();
+	WriteRegistersToFile();
 	
-	WritreTrace();
+	CloseFiles();
 	// TODO: Free memory
 }
 

@@ -1,0 +1,70 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.c" />
+    <ClCompile Include="IO\IOHandler.c">
+      <Filter>IO</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\Monitor.c">
+      <Filter>IO</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\Disk.c">
+      <Filter>IO</Filter>
+    </ClCompile>
+    <ClCompile Include="IO\Led.c">
+      <Filter>IO</Filter>
+    </ClCompile>
+    <ClCompile Include="Misc\Interrupts.c">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Misc\Files.c">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Misc\Registers.c">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Misc\Helpers.c">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="Misc\Memory.c">
+      <Filter>Misc</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IO\IOHandler.h">
+      <Filter>IO</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Monitor.h">
+      <Filter>IO</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Disk.h">
+      <Filter>IO</Filter>
+    </ClInclude>
+    <ClInclude Include="IO\Led.h">
+      <Filter>IO</Filter>
+    </ClInclude>
+    <ClInclude Include="Misc\Interrupts.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Misc\Files.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Misc\Registers.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Misc\Helpers.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="Misc\Memory.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="IO">
+      <UniqueIdentifier>{60e0afa8-310a-4f12-84ad-ee03a61caa9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc">
+      <UniqueIdentifier>{7c765312-f9ec-4b2f-834a-05c9f4ef21e7}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -20,10 +20,7 @@ void WriteMemoryToFile()
 {
 	for (uint i = 0; i < MEMORY_SIZE; i++)
 	{
-		char hexValue[9];
-		GetHexValueOfConstant(Memory[i], hexValue, 8);
-		
-		fprintf(DmemOutFile, "%s\n", hexValue);
+		fprintf(DmemOutFile, "%08X\n", Memory[i]);
 	}
 }
 

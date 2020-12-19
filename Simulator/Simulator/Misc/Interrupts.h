@@ -11,4 +11,6 @@ uint GetIrqSignal(void);
 void HandleInterrupt(void);
 void ExecuteInterrupts(uint incrementValue);
 
+void FreeInterruptsMemory(void);
+
 #endif

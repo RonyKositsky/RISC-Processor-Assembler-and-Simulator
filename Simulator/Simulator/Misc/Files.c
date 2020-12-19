@@ -16,7 +16,7 @@ int OpenFiles(char* argv[])
 	CyclesFile = fopen(argv[9], "w");
 	LedsFile = fopen(argv[10], "w");
 	MonitorFile = fopen(argv[11], "w");
-	MonitorYuvFile = fopen(argv[12], "w");
+	MonitorYuvFile = fopen(argv[12], "wb");
 	DiskOutFile = fopen(argv[13], "w");
 
 	return (ImemInFile == NULL) ||
@@ -58,27 +58,21 @@ void WriteHwTrace(InstructionCommand command)
 	char* mode = strcmp(command.opcode.OpcodeName, "in") ? "WRITE" : "READ";
 	uint registerIndex = RegisterMapping[command.rs].RegisterValue + RegisterMapping[command.rt].RegisterValue;
 
-	char hexValue[9];
-	if (!strcmp(command.opcode.OpcodeName, "in"))
-		GetHexValueOfConstant(IORegisterMapping[registerIndex].RegisterValue, hexValue, 8);
-	else
-		GetHexValueOfConstant(RegisterMapping[command.rd].RegisterValue, hexValue, 8);
+	uint value = !strcmp(command.opcode.OpcodeName, "in") ? 
+		IORegisterMapping[registerIndex].RegisterValue :
+		RegisterMapping[command.rd].RegisterValue;
 		
-	fprintf(HwRegTraceFile, "%d %s %s %s\n", 
-		ClockCycles +1, mode, IORegisterMapping[registerIndex].RegisterName, hexValue);
+	fprintf(HwRegTraceFile, "%d %s %s %08X\n", 
+		ClockCycles +1, mode, IORegisterMapping[registerIndex].RegisterName, value);
 }
 
 void WriteTrace(InstructionCommand command)
 {
-	char pcBytes[4];
-	GetHexValueOfConstant(command.PCLocation, pcBytes, 3);
-	fprintf(TraceFile, "%s %s", pcBytes, command.Name);
+	fprintf(TraceFile, "%03X %s", command.PCLocation, command.Name);
 
-	for (int i = 0; i < NUMBER_OF_REGISTERS; i++) // TODO: Check if sign extension works for R1
+	for (int i = 0; i < NUMBER_OF_REGISTERS; i++)
 	{
-		char registerBytes[9];
-		GetHexValueOfConstant(RegisterMapping[i].RegisterValue, registerBytes, 8);
-		fprintf(TraceFile, " %s", registerBytes);
+		fprintf(TraceFile, " %08X", RegisterMapping[i].RegisterValue);
 	}
 	fputc('\n', TraceFile);
 
@@ -90,9 +84,7 @@ void WriteRegistersToFile()
 {
 	for (int i = 2; i < NUMBER_OF_REGISTERS; i++)
 	{
-		char registerBytes[9];
-		GetHexValueOfConstant(RegisterMapping[i].RegisterValue, registerBytes, 8);
-		fprintf(RegOutFile, "%s\n", registerBytes);
+		fprintf(RegOutFile, "%08X\n", RegisterMapping[i].RegisterValue);
 	}
 }
 

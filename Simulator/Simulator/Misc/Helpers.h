@@ -10,7 +10,6 @@ uint TotalInstructionsCommand;
 int GetDecimalFromHex(char* hexValue);
 int GetDecimalFromHex2Comp(char* hexValue);
 void RemoveLastChar(char* str);
-void GetHexValueOfConstant(uint num, char* hexVal, int numOfBytes);
 
 
 #endif

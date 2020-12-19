@@ -18,15 +18,3 @@ int GetDecimalFromHex2Comp(char* hexValue)
 void RemoveLastChar(char* str) {
 	str[strlen(str) - 1] = '\0';
 }
-
-void GetHexValueOfConstant(uint num, char* hexVal, int numOfBytes) {
-	const int base = 16;
-	hexVal[numOfBytes] = '\0';
-	int i = numOfBytes - 1;
-
-	do {
-		hexVal[i] = "0123456789ABCDEF"[num % base];
-		i--;
-		num /= base;
-	} while (i >= 0);
-}

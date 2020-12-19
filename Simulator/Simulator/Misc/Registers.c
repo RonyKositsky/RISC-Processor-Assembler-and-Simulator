@@ -38,7 +38,7 @@ IORegister IORegisterMapping[NUMBER_OF_IO_REGISTERS] = {
 	{"irq2status", "5", 1, 0},
 	{"irqhandler", "6", 12, 0},
 	{"irqreturn", "7", 12, 0},
-	{"clks", "8", 32, 0},
+	{"clks", "8", 32, 0}, // TODO: What???? (Page 4 on pdf)
 	{"leds", "9", 32, 0},
 	{"reserved", "10", 32, 0},
 	{"timerenable", "11", 1, 0},
@@ -76,7 +76,11 @@ void Multiply(uint rd, uint rs, uint rt) {
 void LogicShiftLeft(uint rd, uint rs, uint rt) {
 	RegisterMapping[rd].RegisterValue =
 		RegisterMapping[rs].RegisterValue << RegisterMapping[rt].RegisterValue; }
-void ArithmeticShiftRight(uint rd, uint rs, uint rt){} // TODO: ArithmeticShiftRight
+void ArithmeticShiftRight(uint rd, uint rs, uint rt)
+{
+	RegisterMapping[rd].RegisterValue =
+		(int)RegisterMapping[rs].RegisterValue >> (int)RegisterMapping[rt].RegisterValue;
+} 
 void LogicShiftRight(uint rd, uint rs, uint rt) {
 	RegisterMapping[rd].RegisterValue =
 		RegisterMapping[rs].RegisterValue >> RegisterMapping[rt].RegisterValue; }
@@ -215,7 +219,10 @@ void InstructionInit()
 			if (InstructionCommands != NULL)
 				*InstructionCommands = instruction;
 			else
-				exit(1); // TODO: What happen when fail to allocate memory?
+			{
+				printf("Allocation failed");
+				exit(1);
+			} 
 		}
 		else
 		{
@@ -223,7 +230,10 @@ void InstructionInit()
 			if (InstructionCommands + InstructionCounter != NULL)
 				*(InstructionCommands + InstructionCounter) = instruction;
 			else
-				exit(1); // TODO: What happen when fail to allocate memory?
+			{
+				printf("Allocation failed");
+				exit(1);
+			}
 		}
 		InstructionCounter++;
 	}
@@ -243,4 +253,15 @@ InstructionCommand* GetInstructionCommand(uint pc)
 uint IncreasePCAmount(InstructionCommand command)
 {
 	return command.HasImmediate ? 2 : 1;
+}
+
+void FreeInstructionsCommandArray()
+{
+	for (uint i = 0; i < InstructionCounter; i++)
+	{
+		free((InstructionCommands + i)->Name);
+	}
+
+	if (InstructionCommands != NULL)
+		free(InstructionCommands);
 }

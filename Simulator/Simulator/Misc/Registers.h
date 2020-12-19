@@ -33,7 +33,7 @@ typedef enum
 	MONITOR_DATA
 }IORegisterNames;
 
-typedef struct // TODO: Remove name if unnecessary 
+typedef struct
 {
 	char* RegisterName;
 	char* RegisterNumber;
@@ -46,7 +46,7 @@ typedef struct
 	int NumberOfBits;
 	uint RegisterValue;
 }IORegister;
-typedef struct // TODO: Remove name if unnecessary 
+typedef struct
 {
 	char* OpcodeName;
 	char* OpcodeNumber;
@@ -75,5 +75,7 @@ Opcode OpcodeMapping[NUMBER_OF_OPCODES];
 void InstructionInit(void);
 InstructionCommand* GetInstructionCommand(uint pc);
 uint IncreasePCAmount(InstructionCommand command);
+
+void FreeInstructionsCommandArray(void);
 
 #endif

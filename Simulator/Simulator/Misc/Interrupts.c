@@ -94,3 +94,9 @@ void ExecuteInterrupts(uint incrementValue)
 	CheckIrq1Status();
 	CheckIrq2Status();
 }
+
+void FreeInterruptsMemory()
+{
+	if (Irq2Array != NULL)
+		free(Irq2Array);
+}

@@ -72,7 +72,11 @@ void Exit()
 	WriteRegistersToFile();
 	
 	CloseFiles();
-	// TODO: Free memory
+	
+	// Free instructionCommand memory
+	FreeInstructionsCommandArray();
+	// Free Irq2Array
+	FreeInterruptsMemory();
 }
 
 int main(int argc, char* argv[]) {

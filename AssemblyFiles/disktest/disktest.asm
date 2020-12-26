@@ -1,28 +1,82 @@
-	.word 0x100 0 # choose memory adress for diskbuffer.
-	add $s0, $zero, $imm, 0x100 #set $s0 to the memory 0X100 
-    add $t1, $zero, $imm, 0 # index, set to 0
-    add $t3, $zero, $imm, 7 # max value for read
-    out $imm, $imm, $zero, 1 # enable irq1, with two registers
-	add $t0, $zero, $imm, 2 # use irq2 to fire up the first read/write at the 10'th clock cycle
-    out $imm, $zero, $t0, 1 # enable irq1, with two registers
-	add $t0, $zero, $imm, 6 # set $t0=6 for irqhandler
-    out $imm, $t0, $zero, L2 # set irqhandler as L2
-	add $t0, $zero, $imm, 3 # set t0 to the max number of read sector
-L1:
-	beq $imm, $zero,$zero,L1 # stay here till last write
-L2:
-    out $t1, $zero, $imm, 15 # set discsector to current sector for read/write
-    out $s0, $zero, $imm, 16 # set $s0 as memory of buffer
-	bgt $imm, $t1, $t0, L3 # jump to write i too big
-    add $t2, $zero, $imm, 1 #set $t2 as command for disk(read)
-    out $t2, $zero, $imm, 14 #read to disk buffer
-    add $t1, $t1, $imm,4 # add 4 in order to write
-	reti $zero, $zero, $zero, 0 #return from irq call
-L3:
-    add $t2, $zero, $imm, 2 #set $t2 as command for disk(write)
-    out $t2, $zero, $imm, 14 #write to disk sector
-	bge $imm, $t1,$t3,L4 # if we finish jump to L4
-    add $t1, $t1, $imm, -3 #set $t1 to the next sector fo read
-    reti $zero, $zero, $zero, 0 #return from irq call
-L4:
-	halt $zero, $zero, $zero, 0 # will reach here when done
+# Load all 4 first sectors from disk
+	# Read sector 0
+	out $zero, $imm, $zero, 16		# set disk_buffer = 0
+	out $zero, $imm, $zero, 15		# set disk_sector to 0
+	add $t0, $zero, $imm, 1			# $t0=1
+	out $t0, $zero, $imm, 14		# set disc_cmd = 1 (read)
+	jal $imm, $zero, $zero, Wait	# Wait for reading all sector
+	
+	# Read sector 1
+	add $t0, $zero, $imm, 0x100		# $t0= 0x100
+	out $t0, $imm, $zero, 16		# set disk_buffer = 0x100
+	add $t0, $zero, $imm, 1			# $t0=1
+	out $t0, $imm, $zero, 15		# set disk_sector to 1
+	out $t0, $zero, $imm, 14		# set disc_cmd = 1 (read)
+	jal $imm, $zero, $zero, Wait	# Wait for reading all sector
+	
+	# Read sector 2
+	add $t0, $zero, $imm, 0x200		# $t0= 0x200
+	out $t0, $imm, $zero, 16		# set disk_buffer = 0x200
+	add $t0, $zero, $imm, 2			# $t0=2
+	out $t0, $imm, $zero, 15		# set disk_sector to 2
+	add $t0, $zero, $imm, 1			# $t0=1
+	out $t0, $zero, $imm, 14		# set disc_cmd = 1 (read)
+	jal $imm, $zero, $zero, Wait	# Wait for reading all sector
+
+	# Read sector 3
+	add $t0, $zero, $imm, 0x300		# $t0= 0x300
+	out $t0, $imm, $zero, 16		# set disk_buffer = 0x300
+	add $t0, $zero, $imm, 3			# $t0=3
+	out $t0, $imm, $zero, 15		# set disk_sector to 3
+	add $t0, $zero, $imm, 1			# $t0=1
+	out $t0, $zero, $imm, 14		# set disc_cmd = 1 (read)
+	jal $imm, $zero, $zero, Wait	# Wait for reading all sector
+	
+	add $sp, $sp, $imm, -2			# 9: allocate space in stack.
+	sw  $s0, $sp, $imm, 0			# 11: save $s0. 
+	sw  $s1, $sp, $imm, 1			# 11: save $s0. 
+	
+	add $s0, $zero, $zero, 0		# $s0 = 0 (counter)
+	add $s1, $zero, $imm, 127		# $s1 = 127 (sector_size)
+	
+# iterate on sector length and calculate xor
+Loop:
+	bgt $imm, $s0, $s1, End			# if (counter > sector_size) goto End
+	lw $t0, $imm, $s0, 0			# get sector 0 data in counter location
+	
+	# Sector 1
+	lw $t1, $imm, $s0, 0x100		# get sector 1 data in counter location
+	xor $t0, $t0, $t1, 0			# $t0 = xor($t0, $t1)
+	
+	# Sector 2
+	lw $t1, $imm, $s0, 0x200		# get sector 2 data in counter location
+	xor $t0, $t0, $t1, 0			# $t0 = xor($t0, $t1)
+
+	# Sector 3
+	lw $t1, $imm, $s0, 0x300		# get sector 3 data in counter location
+	xor $t0, $t0, $t1, 0			# $t0 = xor($t0, $t1)
+
+	sw $t0, $imm, $s0, 0x400		# store all xor
+	add $s0, $s0, $imm, 1			# $s0++
+	beq $imm, $zero, $zero, Loop	# goto Loop
+
+End:
+	# Write sector 4
+	add $t0, $zero, $imm, 0x400		# $t0= 0x400
+	out $t0, $imm, $zero, 16		# set disk_buffer = 0x400
+	add $t0, $zero, $imm, 4			# $t0=4
+	out $t0, $imm, $zero, 15		# set disk_sector to 4
+	add $t0, $zero, $imm, 2			# $t0=2
+	out $t0, $zero, $imm, 14		# set disc_cmd = 2 (write)
+	jal $imm, $zero, $zero, Wait	# Wait for writing all sector
+	
+	lw  $s1, $sp, $imm, 1			# 29: restore $s1
+	lw  $s0, $sp, $imm, 0			# 2B: restore $s0
+	add $sp, $sp, $imm, 2			# 2D: restore stack
+	halt $zero, $zero, $zero, 0		# halt
+
+# wait for disk status
+Wait:
+	in $t0, $imm, $zero, 17			# get disk_status to $t0
+	beq $ra, $zero, $t0, 0			# if (disk_status == 0) go back
+	beq $imm, $zero, $zero, Wait	# goto Wait

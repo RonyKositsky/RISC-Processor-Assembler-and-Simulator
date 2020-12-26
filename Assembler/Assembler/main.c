@@ -90,7 +90,7 @@ void ExtractLabels() {
 		// Search for command line
 		if (sscanf(line, "%s %s %s %s %s", opcode, rd, rs, rt, immVal)) 
 		{
-			if (opcode[0] == '\0' || opcode[0] == '#')
+			if (opcode[0] == '\0' || opcode[0] == '#' || opcode[0]=='.')
 				continue;
 			// This is label
 			if (opcode[strlen(opcode) - 1] == ':') { 
@@ -170,6 +170,7 @@ void ExtractCommands() {
 		// Search for command line
 		if (sscanf(line, "%s %s %s %s %s %s", opcode, rd, rs, rt, immVal, extraVal)) 
 		{
+			printf("Parsing line - %s", line);
 			if (opcode[0] == '\0' || opcode[0] == '#')
 				continue;
 			

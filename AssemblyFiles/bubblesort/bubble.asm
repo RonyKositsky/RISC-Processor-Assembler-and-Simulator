@@ -1,68 +1,47 @@
-.word 1024 246
-.word 1025 352
-.word 1026 27
-.word 1027 33
-.word 1028 87
-.word 1029 2
-.word 1030 543
-.word 1031 4325
-.word 1032 22
-.word 1033 34
-.word 1034 87
-.word 1035 176
-.word 1036 22
-.word 1037 34
-.word 1038 56
-.word 1039 44
+	add $sp, $zero, $imm, 1		# 0: set $sp = 1
+	sll $sp, $sp, $imm, 11		# 2: set $sp = 1 << 11 = 2048
+	add $sp, $sp, $imm, -2		# 4: adjust stack for 3 items
+	sw $s2, $sp, $imm, 2		# 6: save $s2
+	sw $s1, $sp, $imm, 1		# 8: save $s1
+	sw $s0, $sp, $imm, 0		# a: save $s0
+	add $s0, $zero, $zero, 0	# b: $s0 = 0, the first index
+	add $s2, $zero, $imm, 15	# d: $s2 = n-1 = 15 (length of array)
 
-	add $sp, $zero, $imm, 1			# set $sp = 1
-	sll $sp, $sp, $imm, 11			# set $sp = 1 << 11 = 2048. this prevents the negative address bug
-	add $a0,$zero,$imm,1024			# array start index to a0. the top of the code is used as a main function
-	add $a1,$zero,$imm,1039			# array end index  to a1
-	jal $imm,$zero,$zero,QuickSort	# go to recoursive sorter function
-	halt $zero,$zero,$zero,0		# when this is reached, stop the program
-QuickSort:
-	add $sp,$sp,$imm,-4				# adjust stack for 4 items
-	sw $v0, $sp, $imm, 3			# save the partition index
-	sw $ra, $sp, $imm, 2			# save return address
-	sw $a0, $sp, $imm, 1			# save argument 0(start index)
-	sw $a1, $sp, $imm, 0			# save argument 1(end index)
-	bgt $imm,$a0,$a1,endIf1			# if the array ends before it starts. jump to end if 1(resume control to caller)
-	jal $imm,$zero,$zero,Partition	# go to partition with the calling indexes of a0 and a1. it will set the value of v0 for later use and does not need any arguments as it doesn't change the registers above it
-	add $a1,$v0,$imm,-1				# set end index for first half
-	jal $imm,$zero,$zero,QuickSort	# run recoursive quicksort on first half
-	lw $a1,$sp,$imm,0				# return original end to prepare to run on second half
-	add $a0,$v0,$imm,1				# put start of second half in a0
-	jal $imm,$zero,$zero,QuickSort	# run recoursive quicksort on second half
-endIf1:
-	lw $v0, $sp, $imm, 3			# reload original partition index
-	lw $ra, $sp, $imm, 2			# reload original return address
-	lw $a0, $sp, $imm, 1			# reload original start index
-	lw $a1, $sp, $imm, 0			# reload original end index
-	add $sp,$sp,$imm,4				# free memory from stack
-	beq $ra, $zero, $zero, 0		# return to caller
-Partition:
-	add $sp,$sp,$imm,-1				# adjust stack for 1 items
-	sw $ra, $sp, $imm, 0			# save return address
-	lw $s0,$a1,$zero,0				# load pivot element to s0. it's the top of the array part sent
-	sub $v0,$a0,$imm,1				# i = (low - 1) stored in v0. will be used for the swapping as a new index for elements smaller than pivot then returned to quicksort function to put borders for recoursive calls
-	add $t0,$a0,$zero,0				# use t0 as a for loop index
-Loop:
-	bge $imm, $t0, $a1, LoopEnd		# check if t0 wen too high otherwise exit loop
-	lw $t2, $t0, $zero,0			# load $t0'th array element to $t2
-	bge $imm,$t2,$s0,endIf2			# an if to check if t2 < s0(pivot) otherwise go to endif2
-	add $v0,$v0,$imm,1				# move i(v0) index by 1
-	lw $t3, $v0, $zero,0			# load $v0'th or i'th element to t3
-	sw $t3,$t0,$zero,0				# swap array indexes by sending the registers they were saved in to the other address
-	sw $t2,$v0,$zero,0
-endIf2:
-	add $t0, $t0, $imm, 1			# Advance loop index
-	beq $imm, $zero, $zero, Loop	# jump to Loop
-LoopEnd:
-	add $v0,$v0,$imm,1				# move i index by 1 one last time
-	lw $t3, $v0, $zero,0			# load $v0'th or i'th element to t3
-	sw $s0, $v0, $zero,0			# do the final swap to put pivot in i
-	sw $t3, $a1, $zero,0			# and element at i+1 in pivot
-	lw $ra, $sp, $imm, 0			# restore $ra
-	add $sp,$sp,$imm,1				# free memory from stack
-	beq $ra, $zero, $zero, 0		# return to caller
+FirstLoop:
+	add $s1, $zero, $zero, 0	# f: $s1 = 0, the second index
+	
+SecondLoop:
+	lw $t0, $imm, $s1, 1024		# 10: $t0 = Memory[1024 + $s1]
+	add $t1, $s1, $imm, 1		# 12: $t1 = $s1 + 1
+	lw $t2, $imm, $t1, 1024		# 14: $t2 = Memory[1024 + ($s1 + 1)]
+	bge $imm, $t0, $t2, Continue # 16: if ($t0 >= $t2) goto Continue
+	
+	# Swapping
+	sw $t2, $imm, $s1, 1024		# 18: Memory[1024 + $s1] = $t2
+	sw $t0, $imm, $t1, 1024		# 1a: Memory[1024 + ($s1 + 1)] = $t0
+	
+Continue:
+	add $s1, $s1, $imm, 1		# 1c: $s1++
+	sub $t3, $s2, $s0, 0		# 1e: $t3 = n-1-$s0 (second loop max condition)
+	blt $imm, $s1, $t3, SecondLoop # 1f: if ($s1 < $t3) goto SecondLoop
+	add $s0, $s0, $imm, 1		# 21: $s0++
+	blt $imm, $s0, $s2, FirstLoop # 23: if ($s0 < $s2) goto FirstLoop
+	halt $zero, $zero, $zero, 0	# 25: halt
+	
+#array element
+.word 1024 246	# F6
+.word 1025 352	# 160
+.word 1026 27	# 1B
+.word 1027 33	# 21
+.word 1028 87	# 57
+.word 1029 2	# 2
+.word 1030 543	# 21F
+.word 1031 4325	# 10E5
+.word 1032 22	# 16
+.word 1033 35	# 23
+.word 1034 87	# 57
+.word 1035 176	# B0
+.word 1036 21	# 15
+.word 1037 34	# 22
+.word 1038 56	# 38
+.word 1039 44	# 2C

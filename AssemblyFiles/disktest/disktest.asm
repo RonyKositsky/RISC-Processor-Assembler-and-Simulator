@@ -32,9 +32,9 @@
 	out $t0, $zero, $imm, 14		# set disc_cmd = 1 (read)
 	jal $imm, $zero, $zero, Wait	# Wait for reading all sector
 	
-	add $sp, $sp, $imm, -2			# 9: allocate space in stack.
-	sw  $s0, $sp, $imm, 0			# 11: save $s0. 
-	sw  $s1, $sp, $imm, 1			# 11: save $s0. 
+	add $sp, $sp, $imm, -2			# allocate space in stack.
+	sw  $s0, $sp, $imm, 0			# save $s0. 
+	sw  $s1, $sp, $imm, 1			# save $s0. 
 	
 	add $s0, $zero, $zero, 0		# $s0 = 0 (counter)
 	add $s1, $zero, $imm, 127		# $s1 = 127 (sector_size)
@@ -70,9 +70,9 @@ End:
 	out $t0, $zero, $imm, 14		# set disc_cmd = 2 (write)
 	jal $imm, $zero, $zero, Wait	# Wait for writing all sector
 	
-	lw  $s1, $sp, $imm, 1			# 29: restore $s1
-	lw  $s0, $sp, $imm, 0			# 2B: restore $s0
-	add $sp, $sp, $imm, 2			# 2D: restore stack
+	lw  $s1, $sp, $imm, 1			# restore $s1
+	lw  $s0, $sp, $imm, 0			# restore $s0
+	add $sp, $sp, $imm, 2			# restore stack
 	halt $zero, $zero, $zero, 0		# halt
 
 # wait for disk status

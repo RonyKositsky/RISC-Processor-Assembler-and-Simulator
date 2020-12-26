@@ -4,7 +4,7 @@
 #include "Files.h"
 
 uint Irq2Counter;
-uint* Irq2Array;
+uint* Irq2Array = NULL;
 uint Irq2ArrayCount;
 
 void InitIrq2Array()
@@ -17,6 +17,9 @@ void InitIrq2Array()
 		Irq2ArrayCount++;
 	}
 
+	if (Irq2ArrayCount == 0)
+		return;
+	
 	rewind(Irq2InFile);
 	Irq2Array = (uint*)calloc(Irq2ArrayCount, sizeof(uint));
 

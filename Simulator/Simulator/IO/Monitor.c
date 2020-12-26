@@ -25,12 +25,13 @@ void WriteMonitorData()
 		for (int x = 0; x < NUMBER_OF_PIXEL_X; x++)
 		{
 			fprintf(MonitorFile, "%02X\n", MonitorData[x][y]);
-
-			for(int i=0; i<8; i++)
-			{
-				unsigned char bit = (unsigned char)(((MonitorData[x][y]) & (1 << i)) != 0);
-				fwrite(&bit, sizeof(bit),1 ,MonitorYuvFile);
-			}			
+			// TODO: Make sure it works
+			fwrite((unsigned char*)&MonitorData[x][y], sizeof(char), 1, MonitorYuvFile);
+			//for(int i=0; i<8; i++)
+			//{
+			//	unsigned char bit = (unsigned char)(((MonitorData[x][y]) & (1 << i)) != 0);
+			//	fwrite(&bit, sizeof(bit),1 ,MonitorYuvFile);
+			//}			
 		}
 	}
 }

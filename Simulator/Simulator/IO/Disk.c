@@ -1,48 +1,63 @@
 #include "Disk.h"
 
 #include "../Misc/Files.h"
+#include "../Misc/Memory.h"
 #include "../Misc/Registers.h"
 #define DISK_OPERATION_TIME 1024
 
 // TODO: Read & Write from file
-void InitDiskMemory(FILE* diskInFile)
+void InitDiskMemory()
 {
 	DiskTimer = 0;
 
-	/*char line[10];
+	char line[10];
 	int lineCounter = 0;
-	while (fgets(line, 10, DmemInFile) != NULL) {
-		Memory[lineCounter] = GetDecimalFromHex(line);
+	while (fgets(line, 10, DiskInFile) != NULL) {
+		int sector = lineCounter / SECTOR_NUMBER;
+		int sectorLocation = lineCounter % SECTOR_SIZE;
+		DiskSectorMemory[sector][sectorLocation] = GetDecimalFromHex(line);
 		lineCounter++;
 	}
 
-	while (lineCounter < MEMORY_SIZE) {
-		Memory[lineCounter] = 0;
+	while (lineCounter < SECTOR_NUMBER * SECTOR_SIZE) {
+		int sector = lineCounter / SECTOR_NUMBER;
+		int sectorLocation = lineCounter % SECTOR_SIZE;
+		DiskSectorMemory[sector][sectorLocation] = 0;
 		lineCounter++;
-	}*/
+	}
 }
 
-void WriteDiskMemory(FILE* diskOutFile)
+void WriteDiskMemory()
 {
-	/*for (uint i = 0; i < MEMORY_SIZE; i++)
+	for (int sector = 0; sector < SECTOR_NUMBER; sector++)
 	{
-		char hexValue[9];
-		GetHexValueOfConstant(Memory[i], hexValue, 8);
-
-		fprintf(DmemOutFile, "%s\n", hexValue);
-	}*/
+		for (int sectorLocation = 0; sectorLocation < SECTOR_SIZE; sectorLocation++)
+		{
+			fprintf(DiskOutFile, "%08X\n", DiskSectorMemory[sector][sectorLocation]);
+		}
+	}
 }
 
 void ReadSector()
 {
 	uint sector = IORegisterMapping[DISK_SECTOR].RegisterValue;
-	IORegisterMapping[DISK_BUFFER].RegisterValue = DiskSectorMemory[sector];
+	uint memoryPointer = IORegisterMapping[DISK_BUFFER].RegisterValue;
+
+	for (int sectorLocation = 0; sectorLocation < SECTOR_SIZE; sectorLocation++)
+	{
+		Memory[memoryPointer + sectorLocation] = DiskSectorMemory[sector][sectorLocation];
+	}
 }
 
 void WriteSector()
 {
 	uint sector = IORegisterMapping[DISK_SECTOR].RegisterValue;
-	DiskSectorMemory[sector] = IORegisterMapping[DISK_BUFFER].RegisterValue;
+	uint memoryPointer = IORegisterMapping[DISK_BUFFER].RegisterValue;
+
+	for (int sectorLocation = 0; sectorLocation < SECTOR_SIZE; sectorLocation++)
+	{
+		DiskSectorMemory[sector][sectorLocation] = Memory[memoryPointer + sectorLocation];
+	}
 }
 
 int DiskCommand(uint timerIncrement)

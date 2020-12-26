@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
+#include "IO/Disk.h"
 #include "Misc/Interrupts.h"
 #include "IO/IOHandler.h"
 #include "IO/Monitor.h"
@@ -18,6 +20,7 @@ void Init()
 	ClockCycles = 0;
 	
 	MemoryInit();
+	InitDiskMemory();
 	InstructionInit();
 	InitInterrupts();
 }
@@ -66,10 +69,12 @@ void MainLoop()
 
 void Exit()
 {
+	// Write out files
 	WriteMemoryToFile();
 	WriteMonitorData();
 	WriteCyclesToFile();
 	WriteRegistersToFile();
+	WriteDiskMemory();
 	
 	CloseFiles();
 	

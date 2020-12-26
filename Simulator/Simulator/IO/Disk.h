@@ -1,16 +1,16 @@
 ﻿#ifndef DISK
 #define DISK
 #define SECTOR_NUMBER 128
-#define SECTOR_SIZE 512
+#define SECTOR_SIZE 128
 
 #include <stdio.h>
 #include "../Misc/Helpers.h"
 
 uint DiskTimer;
-uint DiskSectorMemory[SECTOR_NUMBER];
+uint DiskSectorMemory[SECTOR_NUMBER][SECTOR_SIZE];
 
-void InitDiskMemory(FILE* diskInFile);
-void WriteDiskMemory(FILE* diskOutFile);
+void InitDiskMemory(void);
+void WriteDiskMemory(void);
 
 int DiskCommand(uint timerIncrement);
 

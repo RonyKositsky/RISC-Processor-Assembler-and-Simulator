@@ -37,7 +37,7 @@ int GetDecimalValueFromString(char* str)
 		return (int)strtol(str + 2, NULL, 16);
 	}
 
-	// we with decimal value
+	// with decimal value
 	return atoi(str);
 }
 

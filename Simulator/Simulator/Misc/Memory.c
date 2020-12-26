@@ -1,4 +1,7 @@
 #include "Memory.h"
+
+#include <stdlib.h>
+
 #include "Files.h"
 
 void MemoryInit()
@@ -6,7 +9,8 @@ void MemoryInit()
 	char line[10];
 	int lineCounter = 0;
 	while (fgets(line, 10, DmemInFile) != NULL) {
-		Memory[lineCounter] = GetDecimalFromHex(line);
+		//Memory[lineCounter] = GetDecimalFromHex(line);
+		Memory[lineCounter] = strtoul(line, NULL, 16);
 		lineCounter++;
 	}
 

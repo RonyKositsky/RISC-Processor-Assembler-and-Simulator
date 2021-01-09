@@ -12,3 +12,4 @@
 .user
 *.user
 /Simulator/Simulator/Debug
+/Test

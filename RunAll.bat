@@ -1,2 +1,2 @@
-Assembler\Debug\Assembler.exe AssemblyFiles\circle\circle2.asm \Test\imemin.txt \Test\dmemin.txt
+Assembler\Debug\Assembler.exe AssemblyFiles\circle\circle.asm \Test\imemin.txt \Test\dmemin.txt
 Simulator\Debug\Simulator.exe Test\imemin.txt Test\dmemin.txt Test\diskin.txt Test\irq2in.txt Test\dmemout.txt Test\regout.txt Test\trace.txt Test\hwregtrace.txt Test\cycles.txt Test\leds.txt Test\monitor.txt Test\monitor.yuv Test\diskout.txt

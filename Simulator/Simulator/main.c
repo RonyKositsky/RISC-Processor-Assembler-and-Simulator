@@ -25,6 +25,13 @@ void Init()
 	InitInterrupts();
 }
 
+/*
+* Main loop of the simulator. Its operation sequence:
+* -Handle interrupt.
+* -Fetch command.
+* -Increase PC and timer.
+* -Execute.
+*/
 void MainLoop()
 {
 	while (ProgramCounter <= INSTRUCTION_COUNT)
@@ -52,7 +59,7 @@ void MainLoop()
 
 		// Increase ClockCycle
 		ClockCycles += incrementPCValue;
-		
+
 		// Interrupts execution
 		ExecuteInterrupts(incrementPCValue);
 
@@ -67,6 +74,9 @@ void MainLoop()
 	}
 }
 
+/*
+* All the closing and memory freeing before exiting the program.
+*/
 void Exit()
 {
 	// Write out files

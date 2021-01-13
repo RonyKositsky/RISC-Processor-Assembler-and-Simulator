@@ -3,7 +3,7 @@
 
 #include "Helpers.h"
 
-uint InterruptBusy;
+uint InterruptBusy; //Interrupt busy flag.
 
 // General
 void InitInterrupts();

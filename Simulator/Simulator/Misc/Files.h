@@ -5,7 +5,7 @@
 
 FILE* ImemInFile;
 FILE* DmemInFile; 
-FILE* DiskInFile; // TODO: missing
+FILE* DiskInFile; 
 FILE* Irq2InFile;
 FILE* DmemOutFile; 
 FILE* RegOutFile;
@@ -14,8 +14,8 @@ FILE* HwRegTraceFile;
 FILE* CyclesFile;
 FILE* LedsFile;
 FILE* MonitorFile;
-FILE* MonitorYuvFile; // TODO: missing
-FILE* DiskOutFile; // TODO: missing
+FILE* MonitorYuvFile; 
+FILE* DiskOutFile; 
 
 int OpenFiles(char* argv[]);
 void CloseFiles(void);

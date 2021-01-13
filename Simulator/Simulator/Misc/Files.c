@@ -3,6 +3,9 @@
 
 #include <string.h>
 
+/*
+* Opening all of the required filed from the arguments.
+*/
 int OpenFiles(char* argv[])
 {
 	ImemInFile = fopen(argv[1], "r");
@@ -36,6 +39,9 @@ int OpenFiles(char* argv[])
 		(DiskOutFile == NULL);
 }
 
+/*
+* Closing all files at the end of the program.
+*/
 void CloseFiles()
 {
 	fclose(ImemInFile);
@@ -53,6 +59,9 @@ void CloseFiles()
 	fclose(DiskOutFile);
 }
 
+/*
+* Writing HW trace line. Retrive command as an arguments and exctract all the needed values from the command.
+*/
 void WriteHwTrace(InstructionCommand command)
 {
 	char* mode = strcmp(command.opcode.OpcodeName, "in") ? "WRITE" : "READ";
@@ -66,6 +75,9 @@ void WriteHwTrace(InstructionCommand command)
 		ClockCycles +1, mode, IORegisterMapping[registerIndex].RegisterName, value);
 }
 
+/*
+* Writing trace line. Retrive command as an arguments and exctract all the needed values from the command.
+*/
 void WriteTrace(InstructionCommand command)
 {
 	fprintf(TraceFile, "%03X %s", command.PCLocation, command.Name);
@@ -80,6 +92,9 @@ void WriteTrace(InstructionCommand command)
 		WriteHwTrace(command);
 }
 
+/*
+* Writing all the regiters values at the end of the program.
+*/
 void WriteRegistersToFile()
 {
 	for (int i = 2; i < NUMBER_OF_REGISTERS; i++)
@@ -88,6 +103,9 @@ void WriteRegistersToFile()
 	}
 }
 
+/*
+* Writing clock cycles and total instruction conducted to cycles files.
+*/
 void WriteCyclesToFile()
 {
 	fprintf(CyclesFile, "%d\n", ClockCycles);

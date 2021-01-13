@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include "../Misc/Helpers.h"
 
-uint MonitorData[NUMBER_OF_PIXEL_X][NUMBER_OF_PIXEL_Y];
+uint MonitorData[NUMBER_OF_PIXEL_X][NUMBER_OF_PIXEL_Y]; //Array representing the monitor data.
 
 void InitMonitor(void);
 void MonitorCommand(void);

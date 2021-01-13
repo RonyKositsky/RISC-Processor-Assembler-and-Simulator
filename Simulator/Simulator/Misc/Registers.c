@@ -9,9 +9,11 @@
 #include <string.h>
 
 
-// Static definitions
+/*
+* Static defintion of all of our registers.
+*/
 Register RegisterMapping[NUMBER_OF_REGISTERS] = {
-	{"$zero", "0", 0},	// Constant zero
+	{"$zero", "0", 0},		// Constant zero
 	{"$imm", "1", 0},		// Sign extended immediate
 	{"$v0", "2", 0},		// Result value
 	{"$a0", "3", 0},		// Argument register
@@ -29,6 +31,9 @@ Register RegisterMapping[NUMBER_OF_REGISTERS] = {
 	{"$ra", "F", 0},		// Return address
 };
 
+/*
+* Static defintion of all of our IO registers.
+*/
 IORegister IORegisterMapping[NUMBER_OF_IO_REGISTERS] = {
 	{"irq0enable", "0", 1, 0},
 	{"irq1enable", "1", 1, 0},
@@ -38,7 +43,7 @@ IORegister IORegisterMapping[NUMBER_OF_IO_REGISTERS] = {
 	{"irq2status", "5", 1, 0},
 	{"irqhandler", "6", 12, 0},
 	{"irqreturn", "7", 12, 0},
-	{"clks", "8", 32, 0}, // TODO: What???? (Page 4 on pdf)
+	{"clks", "8", 32, 0}, 
 	{"leds", "9", 32, 0},
 	{"reserved", "10", 32, 0},
 	{"timerenable", "11", 1, 0},
@@ -54,7 +59,9 @@ IORegister IORegisterMapping[NUMBER_OF_IO_REGISTERS] = {
 	{"monitordata", "21", 8, 0}
 };
 
-// Operation Functions
+/*
+* Functions for all of our opcodes operations.
+*/
 void Add(uint rd, uint rs, uint rt){
 	RegisterMapping[rd].RegisterValue = 
 		RegisterMapping[rs].RegisterValue + RegisterMapping[rt].RegisterValue; }
@@ -143,6 +150,9 @@ void Halt(uint rd, uint rs, uint rt)
 	ProgramCounter = INSTRUCTION_COUNT + 1;
 }
 
+/*
+* Opcode mapping array.
+*/
 Opcode OpcodeMapping[NUMBER_OF_OPCODES] = {
 	{"add", "00", Add},
 	{"sub", "01", Sub},
@@ -168,6 +178,11 @@ Opcode OpcodeMapping[NUMBER_OF_OPCODES] = {
 	{"halt", "15", Halt},
 };
 
+/*
+* Init all of our commands from the assembler to InstructionCommands array.
+* During the main loop we will extract the next command from this array by its PC and will execute
+* its command.
+*/
 void InstructionInit()
 {
 	char line[7];
@@ -239,6 +254,9 @@ void InstructionInit()
 	}
 }
 
+/*
+* Retrive the command from our command array by its program counter.
+*/
 InstructionCommand* GetInstructionCommand(uint pc)
 {
 	for (uint i = 0; i < InstructionCounter; i++)
@@ -250,11 +268,17 @@ InstructionCommand* GetInstructionCommand(uint pc)
 	return NULL;
 }
 
+/*
+* Increase by 2 or 1 depends if the command has immediate value.
+*/
 uint IncreasePCAmount(InstructionCommand command)
 {
 	return command.HasImmediate ? 2 : 1;
 }
 
+/*
+* Free all dynamic memory allocation of the InstructionCommands array.
+*/
 void FreeInstructionsCommandArray()
 {
 	for (uint i = 0; i < InstructionCounter; i++)

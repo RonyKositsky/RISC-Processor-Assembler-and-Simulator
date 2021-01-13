@@ -1,0 +1,12 @@
+﻿  Disk.c
+  IOHandler.c
+  Led.c
+  main.c
+  Monitor.c
+  Files.c
+  Helpers.c
+  Interrupts.c
+  Memory.c
+  Registers.c
+  Generating Code...
+  Simulator.vcxproj -> C:\Git\Assembler\Simulator\x64\Debug\Simulator.exe

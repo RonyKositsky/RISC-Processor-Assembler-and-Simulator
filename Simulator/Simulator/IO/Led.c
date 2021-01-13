@@ -1,6 +1,9 @@
 #include "Led.h"
 #include "../Misc/Files.h"
 
+/*
+* Writing LEDs status to file.
+*/
 void WriteLEDStatus()
 {
 	// We take 'ClockCycles + 1' because the instruction out is immediate and we increase ClockCycles in 2 after this.

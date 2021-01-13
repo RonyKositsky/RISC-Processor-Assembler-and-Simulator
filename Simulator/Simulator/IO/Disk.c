@@ -3,9 +3,11 @@
 #include "../Misc/Files.h"
 #include "../Misc/Memory.h"
 #include "../Misc/Registers.h"
-#define DISK_OPERATION_TIME 1024
+#define DISK_OPERATION_TIME 1024 //Definition of disk cycle time.
 
-// TODO: Read & Write from file
+/*
+*Init the disk memory array.
+*/
 void InitDiskMemory()
 {
 	DiskTimer = 0;
@@ -27,6 +29,9 @@ void InitDiskMemory()
 	}
 }
 
+/*
+* Write disk memory to file.
+*/
 void WriteDiskMemory()
 {
 	for (int sector = 0; sector < SECTOR_NUMBER; sector++)
@@ -38,6 +43,9 @@ void WriteDiskMemory()
 	}
 }
 
+/*
+* Read disk operation. Read complete sector.
+*/
 void ReadSector()
 {
 	uint sector = IORegisterMapping[DISK_SECTOR].RegisterValue;
@@ -49,6 +57,9 @@ void ReadSector()
 	}
 }
 
+/*
+* Write disk operation. Write complete sector.
+*/
 void WriteSector()
 {
 	uint sector = IORegisterMapping[DISK_SECTOR].RegisterValue;
@@ -60,6 +71,10 @@ void WriteSector()
 	}
 }
 
+/*
+* Disk command. Check if the last command has ended.
+* If not, increase clock cycles and return.
+*/
 int DiskCommand(uint timerIncrement)
 {
 	if (DiskTimer < DISK_OPERATION_TIME)

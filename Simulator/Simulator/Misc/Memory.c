@@ -1,9 +1,10 @@
 #include "Memory.h"
-
 #include <stdlib.h>
-
 #include "Files.h"
 
+/*
+* Init memory array from the input file.
+*/
 void MemoryInit()
 {
 	char line[10];
@@ -20,6 +21,9 @@ void MemoryInit()
 	}
 }
 
+/*
+* Write final memory image to output file.
+*/
 void WriteMemoryToFile()
 {
 	for (uint i = 0; i < MEMORY_SIZE; i++)

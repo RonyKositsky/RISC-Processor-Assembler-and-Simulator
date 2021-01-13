@@ -1,6 +1,9 @@
 #include "Monitor.h"
 #include "../Misc/Files.h"
 
+/*
+* Init monitor data array to array of zeros(start with empty screen).
+*/
 void InitMonitor()
 {
 	// Init MonitorData array to 0;
@@ -9,6 +12,9 @@ void InitMonitor()
 			MonitorData[i][j] = 0;
 }
 
+/*
+* Writing new (x,y) pixel depending on the data on the IORegister.
+*/
 void MonitorCommand()
 {
 	uint x = IORegisterMapping[MONITOR_X].RegisterValue;
@@ -18,6 +24,10 @@ void MonitorCommand()
 	MonitorData[x][y] = data;
 }
 
+/*
+*Writing the monitor data to files.
+*One is to txt format and the second one to yuv format.
+*/
 void WriteMonitorData()
 {
 	for (int y = 0; y < NUMBER_OF_PIXEL_Y; y++)
@@ -25,13 +35,7 @@ void WriteMonitorData()
 		for (int x = 0; x < NUMBER_OF_PIXEL_X; x++)
 		{
 			fprintf(MonitorFile, "%02X\n", MonitorData[x][y]);
-			// TODO: Make sure it works
 			fwrite((unsigned char*)&MonitorData[x][y], sizeof(char), 1, MonitorYuvFile);
-			//for(int i=0; i<8; i++)
-			//{
-			//	unsigned char bit = (unsigned char)(((MonitorData[x][y]) & (1 << i)) != 0);
-			//	fwrite(&bit, sizeof(bit),1 ,MonitorYuvFile);
-			//}			
 		}
 	}
 }

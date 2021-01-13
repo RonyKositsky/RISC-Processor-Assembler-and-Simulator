@@ -7,6 +7,9 @@ uint Irq2Counter;
 uint* Irq2Array = NULL;
 uint Irq2ArrayCount;
 
+/*
+* Init array of all the times of the irq2 interrupt from the input file.
+*/
 void InitIrq2Array()
 {
 	char line[500];
@@ -30,6 +33,9 @@ void InitIrq2Array()
 	}
 }
 
+/*
+* Check irq0 status. If irq0 is enabled, execute it every IORegisterMapping[TIMER_CURRENT] cycles.
+*/
 void CheckIrq0Status(uint incrementValue)
 {
 	if (IORegisterMapping[TIMER_ENABLE].RegisterValue)
@@ -44,11 +50,14 @@ void CheckIrq0Status(uint incrementValue)
 	}
 }
 
-void CheckIrq1Status()
-{
-	// TODO: Maybe put here the irq1status handling
-}
 
+/*
+* Check irq2 status. We hold array of all the interrupt times. If we pass the time in the current 
+* array element the interrupt is triggered and we move our array pointer to the next element in the
+* array.
+* If we reach to the final array element the counter will be larger than the array size, and the 
+* interrupt will not be triggered again.
+*/
 void CheckIrq2Status()
 {
 	if (Irq2Counter < Irq2ArrayCount)
@@ -61,13 +70,18 @@ void CheckIrq2Status()
 	}
 }
 
+/*
+* Init interrupts data for the start of the program.
+*/
 void InitInterrupts()
 {
 	InterruptBusy = 0;
 	InitIrq2Array();
 }
 
-
+/*
+* Get the irqsignal data. If it will be euqal to 1, interrupt signal will be sent.
+*/
 uint GetIrqSignal()
 {
 	uint irq0enable = IORegisterMapping[IRQ_0_ENABLE].RegisterValue;
@@ -81,6 +95,10 @@ uint GetIrqSignal()
 	return (irq0enable & irq0status) | (irq1enable & irq1status) | (irq2enable & irq2status);
 }
 
+/*
+* Handling the interrupt. If it is marked as busy, return.
+* Else, save the PC, retrieve the interrupt PC and start handling it. Mark the interrupt as busy.
+*/
 void HandleInterrupt()
 {
 	if (InterruptBusy)
@@ -91,13 +109,19 @@ void HandleInterrupt()
 	InterruptBusy = 1;
 }
 
+/*
+* Execute the interrupt(checking the relevant interrupt by the signal).
+* Pass incrementValue paramter to increase irq2 timer by the number of cycles we went forward.
+*/
 void ExecuteInterrupts(uint incrementValue)
 {
 	CheckIrq0Status(incrementValue);
-	CheckIrq1Status();
 	CheckIrq2Status();
 }
 
+/*
+* Free the irq2 array memory allocation.
+*/
 void FreeInterruptsMemory()
 {
 	if (Irq2Array != NULL)

@@ -88,7 +88,7 @@ void ExtractLabels() {
 		rd[0] = '\0';
 
 		// Search for command line
-		if (sscanf(line, "%s %s %s %s %s", opcode, rd, rs, rt, immVal)) 
+		if (sscanf(line, "%s%*[ ,\t]%[a-zA-Z$0-9]%*[ ,\t]%[a-zA-Z$0-9]%*[ ,\t]%[a-zA-Z$0-9]%*[ ,\t]%[a-zA-Z$0-9]", opcode, rd, rs, rt, immVal)) 
 		{
 			if (opcode[0] == '\0' || opcode[0] == '#' || opcode[0]=='.')
 				continue;
@@ -137,7 +137,7 @@ void HandleCommand(char* opcode, char* rd, char* rs, char* rt, char* immVal)
 	}
 
 	// Removing ','
-	RemoveLastChar(rd); RemoveLastChar(rs); RemoveLastChar(rt);
+	RemoveLastComma(rd); RemoveLastComma(rs); RemoveLastComma(rt);
 	
 	// Writing Opcode number and registers
 	fprintf(imemFile, "%s%s%s%s\n",
@@ -168,7 +168,7 @@ void ExtractCommands() {
 		rd[0] = '\0';
 
 		// Search for command line
-		if (sscanf(line, "%s %s %s %s %s %s", opcode, rd, rs, rt, immVal, extraVal)) 
+		if (sscanf(line, "%s%*[ ,\t]%[a-zA-Z$0-9]%*[ ,\t]%[a-zA-Z$0-9]%*[ ,\t]%[a-zA-Z$0-9]%*[ ,\t]%[a-zA-Z$0-9[-]]%*[ ,\t]%[a-zA-Z$0-9[-]]", opcode, rd, rs, rt, immVal, extraVal)) 
 		{
 			printf("Parsing line - %s", line);
 			if (opcode[0] == '\0' || opcode[0] == '#')

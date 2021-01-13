@@ -2,7 +2,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-void RemoveLastChar(char* str) {
+void RemoveLastComma(char* str) {
+	if (str[strlen(str) - 1] == ',')
+		str[strlen(str) - 1] = '\0';
+}
+
+void RemoveLastChar (char* str) {
 	str[strlen(str) - 1] = '\0';
 }
 

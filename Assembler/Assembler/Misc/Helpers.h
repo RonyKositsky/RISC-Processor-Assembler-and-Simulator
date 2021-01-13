@@ -8,6 +8,7 @@ typedef struct {
 }Label;
 
 void RemoveLastChar(char* str);
+void RemoveLastComma(char* str);
 int GetDecimalFromHex(char* hexValue);
 int GetDecimalValueFromString(char* str);
 void GetHexValueOfConstant(uint num, char* hexVal, int numOfBytes);

@@ -1,5 +1,3 @@
-# Assembler
-Assembler for MIPS CPU.
+Assembler for RISC CPU(Simpler version of MIPS).
 
-#Simulator
 Simulator for the assembly code we will receive from the assembler.
